@@ -17,16 +17,16 @@ data = {
     "documents": "https://hackrx.blob.core.windows.net/assets/policy.pdf?sv=2023-01-03&st=2025-07-04T09%3A11%3A24Z&se=2027-07-05T09%3A11%3A00Z&sr=b&sp=r&sig=N4a9OU0w0QXO6AOIBiu4bpl7AXvEZogeT%2FjUHNO7HzQ%3D",
     "questions": [
         
-        "What is the definition of 'Accident' as per the National Parivar Mediclaim Plus Policy?",
-        "How does the policy define an 'AYUSH Hospital'?",
-        "What is the procedure if there is a break in policy due to non-payment of premium?",
-        "Are congenital anomalies covered under this policy? If yes, what types?",
-        "What is the meaning of 'Co-payment' in this policy?",
-        "Does the policy provide a cashless facility, and how is it availed?",
-        "What are the minimum requirements for a Day Care Centre under this policy?",
-        "Who is eligible to be an AYUSH Medical Practitioner as per the policy?",
-        "What is the process for altering the contract or policy schedule?",
-        "Are there any exclusions listed in the policy, and where can they be found?"
+        "Who is eligible to be covered under this policy?",
+        "What is the process for policy renewal?",
+        "How does the policy define 'Reasonable and Customary Charges'?",
+        "What is the waiting period for specific diseases or treatments?",
+        "Are ambulance charges covered under this policy?",
+        "What is the process for claim settlement?",
+        "Are there any co-payment requirements in this policy?",
+        "What is the definition of 'Network Provider'?",
+        "How are sub-limits applied to different treatments?",
+        "What is the policy's stance on coverage for alternative treatments like Ayurveda or Homeopathy?"
     ]
 }
 
