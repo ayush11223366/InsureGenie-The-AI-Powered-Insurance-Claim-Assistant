@@ -28,7 +28,13 @@ class HackRxRequest(BaseModel):
 class HackRxResponse(BaseModel):
     answers: List[str]
 
-API_KEY = os.getenv("API_KEY", "16946ba51d27b2876a0d08882d9c32b7e5faa66ae63f9f94fa85f34e3cb3c3f8")
+API_KEY = os.getenv("API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+if not API_KEY:
+    raise RuntimeError("API_KEY environment variable not set")
+if not GOOGLE_API_KEY:
+    raise RuntimeError("GOOGLE_API_KEY environment variable not set")
 
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "800"))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "200"))
@@ -57,20 +63,6 @@ def download_document(url: str, timeout=10) -> str:
         return temp_dir
     except requests.RequestException as e:
         raise HTTPException(status_code=400, detail=f"Failed to download document: {str(e)}")
-
-SAMPLE_ANSWERS = {
-    "What is the grace period for premium payment under the National Parivar Mediclaim Plus Policy?": "A grace period of thirty days is provided for premium payment after the due date to renew or continue the policy without losing continuity benefits.",
-    "What is the waiting period for pre-existing diseases (PED) to be covered?": "There is a waiting period of thirty-six (36) months of continuous coverage from the first policy inception for pre-existing diseases and their direct complications to be covered.",
-    "Does this policy cover maternity expenses, and what are the conditions?": "Yes, the policy covers maternity expenses, including childbirth and lawful medical termination of pregnancy. To be eligible, the female insured person must have been continuously covered for at least 24 months. The benefit is limited to two deliveries or terminations during the policy period.",
-    "What is the waiting period for cataract surgery?": "The policy has a specific waiting period of two (2) years for cataract surgery.",
-    "Are the medical expenses for an organ donor covered under this policy?": "Yes, the policy indemnifies the medical expenses for the organ donor's hospitalization for the purpose of harvesting the organ, provided the organ is for an insured person and the donation complies with the Transplantation of Human Organs Act, 1994.",
-    "What is the No Claim Discount (NCD) offered in this policy?": "A No Claim Discount of 5% on the base premium is offered on renewal for a one-year policy term if no claims were made in the preceding year. The maximum aggregate NCD is capped at 5% of the total base premium.",
-    "Is there a benefit for preventive health check-ups?": "Yes, the policy reimburses expenses for health check-ups at the end of every block of two continuous policy years, provided the policy has been renewed without a break. The amount is subject to the limits specified in the Table of Benefits.",
-    "How does the policy define a 'Hospital'?": "A hospital is defined as an institution with at least 10 inpatient beds (in towns with a population below ten lakhs) or 15 beds (in all other places), with qualified nursing staff and medical practitioners available 24/7, a fully equipped operation theatre, and which maintains daily records of patients.",
-    "What is the extent of coverage for AYUSH treatments?": "The policy covers medical expenses for inpatient treatment under Ayurveda, Yoga, Naturopathy, Unani, Siddha, and Homeopathy systems up to the Sum Insured limit, provided the treatment is taken in an AYUSH Hospital.",
-    "Are there any sub-limits on room rent and ICU charges for Plan A?": "Yes, for Plan A, the daily room rent is capped at 1% of the Sum Insured, and ICU charges are capped at 2% of the Sum Insured. These limits do not apply if the treatment is for a listed procedure in a Preferred Provider Network (PPN)."
-}
-NORMALIZED_SAMPLE = {k.strip().lower(): v for k, v in SAMPLE_ANSWERS.items()}
 
 # Simplified cache: keep only the FAISS index per document URL
 DOCUMENT_INDEX_CACHE: Dict[str, SimpleVectorStore] = {}
@@ -194,11 +186,6 @@ Context:
 @app.post("/hackrx/run", response_model=HackRxResponse)
 async def hackrx_run(request: HackRxRequest, api_key: str = Depends(verify_api_key), answer_mode: str = Header(default=None, alias="X-Answer-Mode")):
     try:
-        normalized_questions = [q.strip().lower() for q in request.questions]
-        if all(q in NORMALIZED_SAMPLE for q in normalized_questions):
-            answers = [NORMALIZED_SAMPLE[q] for q in normalized_questions]
-            return HackRxResponse(answers=answers)
-
         mode = (answer_mode or DEFAULT_ANSWER_MODE).lower()
         if mode not in ("clause", "compose"):
             mode = "clause"
